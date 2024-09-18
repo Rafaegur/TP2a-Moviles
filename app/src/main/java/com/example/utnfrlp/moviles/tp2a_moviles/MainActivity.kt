@@ -14,6 +14,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlin.random.Random
+import androidx.compose.material3.*
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,53 +33,82 @@ fun GuessNumberScreen() {
     var triesLeft by remember { mutableStateOf(5) }
     var score by remember { mutableStateOf(0) }
     var message by remember { mutableStateOf("") }
+    var isGameOver by remember { mutableStateOf(false) }
 
+    if (isGameOver) {
+        GameOverScreen(score = score) {
+            // Reiniciar el juego
+            userInput = TextFieldValue("")
+            randomNumber = Random.nextInt(1, 5)
+            triesLeft = 5
+            score = 0
+            message = ""
+            isGameOver = false
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Adivina el número entre 1 y 5", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = userInput,
+                onValueChange = { userInput = it },
+                label = { Text("Tu número") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                val guessedNumber = userInput.text.toIntOrNull()
+                if (guessedNumber != null) {
+                    if (guessedNumber == randomNumber) {
+                        score += 10
+                        message = "¡Adivinaste!"
+                    } else {
+                        triesLeft--
+                        message = "Fallaste. Te quedan $triesLeft intentos."
+                        if (triesLeft == 0) {
+                            isGameOver = true
+                        }
+                    }
+                } else {
+                    message = "Introduce un número válido."
+                }
+            }) {
+                Text("Ingresar")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Puntaje: $score")
+            Text(text = message)
+        }
+    }
+}
+
+
+@Composable
+fun GameOverScreen(score: Int, onPlayAgain: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "Adivina el número entre 1 y 5", style = MaterialTheme.typography.titleMedium)
+        Text(text = "¡Perdiste!", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = userInput,
-            onValueChange = { userInput = it },
-            label = { Text("Tu número") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        Text(text = "Tu puntaje final es: $score")
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            val guessedNumber = userInput.text.toIntOrNull()
-            if (guessedNumber != null) {
-                if (guessedNumber == randomNumber) {
-                    score += 10
-                    message = "¡Adivinaste!"
-                } else {
-                    triesLeft--
-                    message = "Fallaste. Te quedan $triesLeft intentos."
-                    if (triesLeft == 0) {
-                        score = 0
-                        message = "Perdiste. El número era $randomNumber."
-                        triesLeft = 5
-                        randomNumber = Random.nextInt(1, 5)
-                    }
-                }
-            } else {
-                message = "Introduce un número válido."
-            }
-        }) {
-            Text("Ingresar")
+        Button(onClick = onPlayAgain) {
+            Text("Jugar de nuevo")
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "Puntaje: $score")
-        Text(text = message)
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewGuessNumberScreen() {
     GuessNumberScreen()
 }
-
