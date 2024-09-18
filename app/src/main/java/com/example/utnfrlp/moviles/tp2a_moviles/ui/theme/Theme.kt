@@ -33,6 +33,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+
 @Composable
 fun TP2aMovilesTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
