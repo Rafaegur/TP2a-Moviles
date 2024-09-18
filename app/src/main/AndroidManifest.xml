@@ -13,6 +13,11 @@
         android:theme="@style/Theme.TP2aMoviles"
         tools:targetApi="31">
         <activity
+            android:name=".Perdiste"
+            android:exported="false"
+            android:label="@string/title_activity_perdiste"
+            android:theme="@style/Theme.TP2aMoviles" />
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
