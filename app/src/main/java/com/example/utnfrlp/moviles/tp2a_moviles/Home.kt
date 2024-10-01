@@ -90,21 +90,20 @@ fun GuessNumberScreen(navController: NavController, dataStoreManager: DataStoreM
             Text("Ver Mejores Puntajes")
         }
     }
-
     if (isGameOver) {
-        GameOverScreen(score = score) {
-
-            // Comparar y guardar el puntaje si es necesario
-            coroutineScope.launch {
-                dataStoreManager.getHighScores().collect { savedScores ->
-                    if (savedScores.isNullOrEmpty() || score > savedScores.maxOf { it.second }) {
-                        dataStoreManager.saveHighScores(
-                            listOf(userName.text to score)
-                        )
-                    }
+        // Comparar y guardar el puntaje si es necesario
+        coroutineScope.launch {
+            dataStoreManager.getHighScores().collect { savedScores ->
+                if (savedScores.isNullOrEmpty() || score > savedScores.maxOf { it.second }) {
+                    dataStoreManager.saveHighScores(
+                        listOf(userName.text to score)
+                    )
                 }
             }
+        }
 
+        GameOverScreen(score = score) {
+            navController.navigate("gameOver/$score")
 
             // Reiniciar el juego
             userInput = TextFieldValue("")
@@ -115,6 +114,7 @@ fun GuessNumberScreen(navController: NavController, dataStoreManager: DataStoreM
             isGameOver = false
         }
     }
+
 }
 
 
